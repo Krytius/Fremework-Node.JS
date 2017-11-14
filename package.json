@@ -1,0 +1,25 @@
+{
+  "name": "testemvc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "caminte": "^0.4.0",
+    "express": "^4.14.0",
+    "mysql": "^2.15.0",
+    "typescript": "^2.0.6"
+  },
+  "devDependencies": {
+    "@types/body-parser": "0.0.33",
+    "@types/express": "^4.0.33",
+    "@types/mysql": "github:types/mysql",
+    "@types/node": "^6.0.46",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.1.1",
+    "typescript": "^2.0.6"
+  },
+  "scripts": {},
+  "author": "",
+  "license": "ISC"
+}

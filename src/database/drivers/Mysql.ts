@@ -1,0 +1,193 @@
+import { createConnection, QueryError, RowDataPacket } from "mysql";
+import { Config } from "../../Config";
+import { WhereModel, InsertModel } from "../Database";
+
+export class Mysql {
+    
+    private connection;
+
+    /**
+     * Start na connexão
+     */
+    private start() {
+        this.connection = createConnection(Config.connection);
+
+        this.connection.connect(function (err) {
+            if (err) {
+                console.error('Problema na conexão com o banco de dados: ' + err.stack);
+                return;
+            }
+        });
+    }
+
+    /**
+     * Fecha a connexão
+     */
+    private end() {
+        this.connection.end();
+    }
+
+    /**
+     * Executa um comando sql
+     * @param query SQL commando
+     */
+    public query(query: string): Promise<any> {
+        if (Config.DEBUG) {
+            console.log(query);
+        }
+
+        this.start();
+        return new Promise((resolve, reject) => {
+            this.connection.query(query, (error, results, fields) => {
+                if (error) {
+
+                    if (Config.DEBUG) console.log(error);
+
+                    reject(error);
+                }
+                else {
+
+                    if (Config.DEBUG) console.log(results);
+
+                    resolve(results);
+                }
+            });
+            this.end();
+        });
+    }
+
+    /**
+     * Get itens banco de dados
+     * @param table 
+     * @param select 
+     * @param where 
+     * @param orderBy 
+     * @param limit 
+     * @param offset 
+     */
+    public get(table: string, select?: Array<string>, where?: Array<WhereModel>, orderBy?: string, limit?: number, offset?: number) {
+
+        var whereSql = [];
+        if (where) {
+            for (var key in where) {
+                if (where[key].operator) {
+                    whereSql.push(`${where[key].col} ${where[key].operator} ${where[key].value}`);
+                } else {
+                    whereSql.push(`${where[key].col} = ${where[key].value}`);
+                }
+            }
+        }
+
+        var query = ``;
+
+        if (select) {
+            query = `SELECT ${select.join(`,`)} `;
+        } else {
+            query = `SELECT * `;
+        }
+
+        query += `FROM ${table} `;
+
+        if (whereSql.length > 0) {
+            query += `WHERE ${whereSql.join(`,`)} `
+        }
+
+        if (orderBy) {
+            query += `ORDER BY ${orderBy} `
+        }
+
+        if (limit) {
+            query += `LIMIT ${limit}`
+            if (offset) {
+                query += `,${offset} `
+            }
+        }
+
+        return this.query(query);
+    }
+
+    public getRow(table: string, id: number) {
+        var where = Object.assign(new Array<WhereModel>(), [{ col: `id`, value: id }])
+        return this.get(table, [`*`], where);
+    }
+
+    /**
+     * Insere itens no banco de dados
+     * @param table 
+     * @param itens 
+     */
+    public insert(table: string, itens: Array<InsertModel>) {
+
+        var query = `INSERT INTO ${table} `;
+
+        var col = [];
+        var values = [];
+        for (var key in itens) {
+            col.push(itens[key].col);
+            values.push(itens[key].value);
+        }
+
+        query += `(${col.join(`,`)}) VALUES (${values.join(`,`)})`;
+
+        return this.query(query);
+    }
+
+    /**
+     * Deleta linha no banco de dados
+     * @param table 
+     * @param where 
+     */
+    public delete(table: string, where: Array<WhereModel>) {
+
+        var query = `DELETE FROM ${table} `;
+
+        var whereSql = [];
+        if (where) {
+            for (var key in where) {
+                if (where[key].operator) {
+                    whereSql.push(`${where[key].col} ${where[key].operator} ${where[key].value}`);
+                } else {
+                    whereSql.push(`${where[key].col} = ${where[key].value}`);
+                }
+            }
+        }
+
+        if (whereSql.length > 0) {
+            query += `WHERE ${whereSql.join(`,`)} `
+        }
+
+        return this.query(query);
+    }
+
+    /**
+     * Atualiza linha banco de dados
+     * @param table 
+     * @param set 
+     * @param where 
+     */
+    public update(table: string, set: Array<InsertModel>, where: Array<WhereModel>) {
+        var query = `UPDATE ${table} SET `;
+
+        for (var key in set) {
+            query += `${set[key].col} = ${set[key].value} `;
+        }
+
+        var whereSql = [];
+        if (where) {
+            for (var key in where) {
+                if (where[key].operator) {
+                    whereSql.push(`${where[key].col} ${where[key].operator} ${where[key].value}`);
+                } else {
+                    whereSql.push(`${where[key].col} = ${where[key].value}`);
+                }
+            }
+        }
+
+        if (whereSql.length > 0) {
+            query += `WHERE ${whereSql.join(`,`)} `
+        }
+
+        return this.query(query);
+    }
+}
+
