@@ -3,43 +3,51 @@ import { Mysql } from "./drivers/Mysql";
 
 export class Database {
 
-    private static driver() {
+    private driver;
+
+    constructor() {
         switch (Config.DatabaseType) {
             case `mysql`:
-                return new Mysql();
+                this.driver = new Mysql();
             default:
-                return new Mysql();
+                this.driver = new Mysql();
         }
     }
 
-    public static query(query: string) {
-        var driver = this.driver();
-        return driver.query(query);
+    public startTransaction() {
+        this.driver.startTransaction();
     }
 
-    public static get(table: string, select?: Array<string>, where?: Array<WhereModel>, orderBy?: string, limit?: number, offset?: number) {
-        var driver = this.driver();
-        return driver.get(table, select, where, orderBy, limit, offset);
+    public commit() {
+        this.driver.commit();
     }
 
-    public static getRow(table: string, id: number) {
-        var driver = this.driver();
-        return driver.getRow(table, id);
+    public rollback() {
+        this.driver.rollback();
     }
 
-    public static insert(table: string, itens: Array<InsertModel>) {
-        var driver = this.driver();
-        return driver.insert(table, itens);
+    public query(query: string) {
+        return this.driver.query(query);
     }
 
-    public static delete(table: string, where: Array<WhereModel>) {
-        var driver = this.driver();
-        return driver.delete(table, where);
+    public get(table: string, select?: Array<string>, where?: Array<WhereModel>, orderBy?: string, limit?: number, offset?: number) {
+        return this.driver.get(table, select, where, orderBy, limit, offset);
     }
 
-    public static update(table: string, set: Array<InsertModel>, where: Array<WhereModel>) {
-        var driver = this.driver();
-        return driver.update(table, set, where);
+    public getRow(table: string, id: number) {
+        return this.driver.getRow(table, id);
+    }
+
+    public insert(table: string, itens: any) {
+        return this.driver.insert(table, itens);
+    }
+
+    public delete(table: string, where: Array<WhereModel>) {
+        return this.driver.delete(table, where);
+    }
+
+    public update(table: string, set: any, where: Array<WhereModel>) {
+        return this.driver.update(table, set, where);
     }
 
 }
@@ -48,9 +56,4 @@ export class WhereModel {
     col: string
     value: any
     operator: string
-}
-
-export class InsertModel {
-    col: string
-    value: any
 }

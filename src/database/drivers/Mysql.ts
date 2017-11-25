@@ -1,16 +1,17 @@
 import { createConnection, QueryError, RowDataPacket } from "mysql";
 import { Config } from "../../Config";
-import { WhereModel, InsertModel } from "../Database";
+import { WhereModel } from "../Database";
 
 export class Mysql {
-    
+
     private connection;
+    private transaction = false;
 
     /**
      * Start na connexão
      */
     private start() {
-        this.connection = createConnection(Config.connection);
+        this.connection = createConnection(Config.Connection);
 
         this.connection.connect(function (err) {
             if (err) {
@@ -27,21 +28,53 @@ export class Mysql {
         this.connection.end();
     }
 
+    public startTransaction() {
+        this.start();
+        this.transaction = true;
+        this.query("SET AUTOCOMMIT=0;");
+        this.query("START TRANSACTION;");
+    }
+
+    public commit() {
+        this.query("COMMIT;");
+        this.transaction = false;
+        this.end();
+    }
+
+    public rollback() {
+        this.query("ROLLBACK;");
+        this.transaction = false;
+        this.end();
+    }
+
     /**
      * Executa um comando sql
      * @param query SQL commando
      */
     public query(query: string): Promise<any> {
+        let transaction = this.transaction;
+
         if (Config.DEBUG) {
             console.log(query);
         }
 
-        this.start();
+        // Não inicializa conexão se for uma transaction
+        if (!transaction) {
+            this.start();
+        }
+        
+        let end = this.end.bind(this);
+        let rollback = this.rollback.bind(this);
+        let connection = this.connection;
         return new Promise((resolve, reject) => {
-            this.connection.query(query, (error, results, fields) => {
+            connection.query(query, (error, results, fields) => {
                 if (error) {
 
                     if (Config.DEBUG) console.log(error);
+
+                    if(transaction) {
+                        rollback();
+                    }
 
                     reject(error);
                 }
@@ -51,8 +84,12 @@ export class Mysql {
 
                     resolve(results);
                 }
+
+                // Não fecha conexão se for uma transaction
+                if (!transaction) {
+                    end();
+                }
             });
-            this.end();
         });
     }
 
@@ -103,7 +140,7 @@ export class Mysql {
             }
         }
 
-        return this.query(query);
+        return this.query(`${query};`);
     }
 
     public getRow(table: string, id: number) {
@@ -116,20 +153,20 @@ export class Mysql {
      * @param table 
      * @param itens 
      */
-    public insert(table: string, itens: Array<InsertModel>) {
+    public insert(table: string, itens: any) {
 
         var query = `INSERT INTO ${table} `;
 
         var col = [];
         var values = [];
         for (var key in itens) {
-            col.push(itens[key].col);
-            values.push(itens[key].value);
+            col.push(key);
+            values.push(itens[key]);
         }
 
         query += `(${col.join(`,`)}) VALUES (${values.join(`,`)})`;
 
-        return this.query(query);
+        return this.query(`${query};`);
     }
 
     /**
@@ -156,7 +193,7 @@ export class Mysql {
             query += `WHERE ${whereSql.join(`,`)} `
         }
 
-        return this.query(query);
+        return this.query(`${query};`);
     }
 
     /**
@@ -165,11 +202,17 @@ export class Mysql {
      * @param set 
      * @param where 
      */
-    public update(table: string, set: Array<InsertModel>, where: Array<WhereModel>) {
+    public update(table: string, set: any, where: Array<WhereModel>) {
         var query = `UPDATE ${table} SET `;
 
+        let cont = 0;
         for (var key in set) {
-            query += `${set[key].col} = ${set[key].value} `;
+            if (cont > 0) {
+                query += `,`;
+            }
+
+            query += `${key} = ${set[key]} `;
+            cont++;
         }
 
         var whereSql = [];
@@ -187,7 +230,7 @@ export class Mysql {
             query += `WHERE ${whereSql.join(`,`)} `
         }
 
-        return this.query(query);
+        return this.query(`${query};`);
     }
 }
 

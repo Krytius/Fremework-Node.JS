@@ -1,11 +1,19 @@
 import * as http from 'http';
 import App from './App';
 import { Config } from './Config';
+import { SocketStart } from './SocketStart';
+
+import socketIO = require('socket.io')
 
 const port = normalizePort(Config.PORT);
 App.set('port', port);
 
 const server = http.createServer(App);
+
+if (Config.SocketIO) {
+    new SocketStart(socketIO(server));
+}
+
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
