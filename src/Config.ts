@@ -4,8 +4,8 @@ export class Config {
     public static DatabaseType = `mysql`; 
     public static Connection = {
         host: 'localhost',
-        user: 'mc',
-        password: '100193',
+        user: 'username',
+        password: 'password',
         database: 'mc'
     };
     public static SocketIO = true;
