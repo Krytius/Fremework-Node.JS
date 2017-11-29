@@ -13,6 +13,10 @@ export class Chat {
         this.socket.on('mensageSend', this.mensageSend.bind(this));
     }
 
+    /**
+     * Usuário se identificando no chat
+     * @param data 
+     */
     private clientIdent(data) {
         this.socket.user = {};
         this.socket.user.nome = data.nome;
@@ -25,6 +29,10 @@ export class Chat {
         this.socket.emit('clientIdent', this.socket.user);
     }
 
+    /**
+     * Lista de assuntos
+     * @param data 
+     */
     private subjectIdent(data) {
         let list = [
             {
@@ -40,6 +48,10 @@ export class Chat {
         this.socket.emit('subjectIdent', list);
     }
 
+    /**
+     * Entrada do usuário em um canal
+     * @param data 
+     */
     private subjectEnter(data) {
         this.socket.subject = data.id;
 
@@ -50,6 +62,10 @@ export class Chat {
         this.socket.emit('subjectEnter', this.socket.user);
     }
 
+    /**
+     * Envio de mensagem para todos do chat
+     * @param data 
+     */
     private mensageSend(data) {
         let message = {
             from: this.socket.user.nome,

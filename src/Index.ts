@@ -1,15 +1,15 @@
+import socketIO = require('socket.io')
 import * as http from 'http';
 import App from './App';
 import { Config } from './Config';
 import { SocketStart } from './SocketStart';
-
-import socketIO = require('socket.io')
 
 const port = normalizePort(Config.PORT);
 App.set('port', port);
 
 const server = http.createServer(App);
 
+// Configuração de socket ligada inicializa o serviço de socket
 if (Config.SocketIO) {
     new SocketStart(socketIO(server));
 }

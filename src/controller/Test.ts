@@ -1,16 +1,20 @@
 import { Router, Request, Response } from "express";
 import { Database, WhereModel } from "../database/Database";
 import { Controller } from "../helpers/interfaces/Controller";
+import { NextFunction } from "express-serve-static-core";
+import { OutError } from "../helpers/interfaces/OutError";
 
 export class TestController implements Controller {
 
-    public post(req: Request, res: Response) {
-        let db = new Database();
+    
+
+    // POST /test
+    public post(req: Request, res: Response, next: NextFunction) {
+        let db = new Database(next.bind(this));
 
         var item = {
             id: req.body.id
         };
-
 
         // Start transaction
         db.startTransaction();
@@ -18,36 +22,38 @@ export class TestController implements Controller {
         // Insert example
         db.insert(`Usuario`, item)
             .then(result => {
-                console.log(result);
-
                 db.commit();
-
                 res.json(result);
             });
     }
 
-    public get(req: Request, res: Response) {
-        console.log("Controller All")
-        res.json({
-            message: `GET`
-        });
+    // GET /test
+    public get(req: Request, res: Response, next: NextFunction) {
+        let db = new Database(next.bind(this));
+        db.get(`Usuario`)
+            .then(result => {
+                res.json(result);
+            });
     }
 
-    public getOne(req: Request, res: Response) {
-        let db = new Database();
+    // GET /test/:id
+    public getOne(req: Request, res: Response, next: NextFunction) {
+        let db = new Database(next);
         db.getRow(`Usuario`, req.params.id)
-            .then(function (result) {
+            .then((result) => {
                 res.json(result);
             });
     }
 
-    public put(req: Request, res: Response) {
+    // PUT /test/:id
+    public put(req: Request, res: Response, next: NextFunction) {
         res.json({
             message: `PUT`
         });
     }
 
-    public delete(req: Request, res: Response) {
+    // DELETE /test/:id
+    public delete(req: Request, res: Response, next: NextFunction) {
         res.json({
             message: `DELETE`
         });

@@ -1,33 +1,47 @@
 import { createConnection, QueryError, RowDataPacket } from "mysql";
+import { NextFunction } from "express";
 import { Config } from "../../Config";
 import { WhereModel } from "../Database";
+import { OutError } from "../../helpers/interfaces/OutError";
 
 export class Mysql {
 
+    private next: NextFunction;
     private connection;
     private transaction = false;
 
+    constructor(next: NextFunction) {
+        this.next = next;
+    }
+
     /**
-     * Start na connexão
+     * Abre a conexão
      */
     private start() {
         this.connection = createConnection(Config.Connection);
-
-        this.connection.connect(function (err) {
+        this.connection.connect((err) => {
             if (err) {
-                console.error('Problema na conexão com o banco de dados: ' + err.stack);
-                return;
+                console.error('Problema na conexão com o banco de dados.' + err.stack);
+                let error: OutError = {
+                    message: 'Problema na conexão com o banco de dados.' + err.stack,
+                    code: 1000
+                }
+
+                this.next(error);
             }
         });
     }
 
     /**
-     * Fecha a connexão
+     * Fecha a conexão
      */
     private end() {
         this.connection.end();
     }
 
+    /**
+     * Inicializa um transaction
+     */
     public startTransaction() {
         this.start();
         this.transaction = true;
@@ -35,12 +49,18 @@ export class Mysql {
         this.query("START TRANSACTION;");
     }
 
+    /**
+     * Commit transaction
+     */
     public commit() {
         this.query("COMMIT;");
         this.transaction = false;
         this.end();
     }
 
+    /**
+     * Roolback transaction
+     */
     public rollback() {
         this.query("ROLLBACK;");
         this.transaction = false;
@@ -51,7 +71,7 @@ export class Mysql {
      * Executa um comando sql
      * @param query SQL commando
      */
-    public query(query: string): Promise<any> {
+    public query(query: string, params?: any): Promise<any> {
         let transaction = this.transaction;
 
         if (Config.DEBUG) {
@@ -62,25 +82,26 @@ export class Mysql {
         if (!transaction) {
             this.start();
         }
-        
+
         let end = this.end.bind(this);
         let rollback = this.rollback.bind(this);
         let connection = this.connection;
+        
         return new Promise((resolve, reject) => {
-            connection.query(query, (error, results, fields) => {
+        
+            var sql = connection.query(query, (params) ? params : [], (error, results, fields) => {
                 if (error) {
 
                     if (Config.DEBUG) console.log(error);
 
-                    if(transaction) {
+                    if (transaction) {
                         rollback();
                     }
 
                     reject(error);
                 }
                 else {
-
-                    if (Config.DEBUG) console.log(results);
+                    if (Config.DEBUG) console.log(sql.sql, results);
 
                     resolve(results);
                 }
@@ -89,7 +110,9 @@ export class Mysql {
                 if (!transaction) {
                     end();
                 }
+                
             });
+
         });
     }
 
@@ -104,17 +127,7 @@ export class Mysql {
      */
     public get(table: string, select?: Array<string>, where?: Array<WhereModel>, orderBy?: string, limit?: number, offset?: number) {
 
-        var whereSql = [];
-        if (where) {
-            for (var key in where) {
-                if (where[key].operator) {
-                    whereSql.push(`${where[key].col} ${where[key].operator} ${where[key].value}`);
-                } else {
-                    whereSql.push(`${where[key].col} = ${where[key].value}`);
-                }
-            }
-        }
-
+        var params = [];
         var query = ``;
 
         if (select) {
@@ -125,22 +138,39 @@ export class Mysql {
 
         query += `FROM ${table} `;
 
-        if (whereSql.length > 0) {
-            query += `WHERE ${whereSql.join(`,`)} `
-        }
-
-        if (orderBy) {
-            query += `ORDER BY ${orderBy} `
-        }
-
-        if (limit) {
-            query += `LIMIT ${limit}`
-            if (offset) {
-                query += `,${offset} `
+        if (where) {
+            let contWhere = 0;
+            query += `WHERE `;
+            for (var key in where) {
+                if (contWhere > 0) {
+                    query += ` AND `;
+                }
+                if (where[key].operator) {
+                    query += `${where[key].col} ${where[key].operator} ?`;
+                    params.push(where[key].value);
+                } else {
+                    query += `${where[key].col} = ?`;
+                    params.push(where[key].value);
+                }
+                contWhere++;
             }
         }
 
-        return this.query(`${query};`);
+        if (orderBy) {
+            query += `ORDER BY ? `
+            params.push(orderBy);
+        }
+
+        if (limit) {
+            query += `LIMIT ?`
+            params.push(limit);
+            if (offset) {
+                query += `,?`
+                params.push(offset);
+            }
+        }
+
+        return this.query(query, params);
     }
 
     public getRow(table: string, id: number) {
@@ -159,14 +189,16 @@ export class Mysql {
 
         var col = [];
         var values = [];
+        var params = [];
         for (var key in itens) {
             col.push(key);
-            values.push(itens[key]);
+            values.push(`?`);
+            params.push(itens[key]);
         }
 
-        query += `(${col.join(`,`)}) VALUES (${values.join(`,`)})`;
+        query += `(${col.join(`,`)}) VALUES (${values.join(`,`)});`;
 
-        return this.query(`${query};`);
+        return this.query(query, params);
     }
 
     /**
@@ -175,25 +207,28 @@ export class Mysql {
      * @param where 
      */
     public delete(table: string, where: Array<WhereModel>) {
-
         var query = `DELETE FROM ${table} `;
+        var params = [];
 
-        var whereSql = [];
         if (where) {
+            let contWhere = 0;
+            query += `WHERE `;
             for (var key in where) {
-                if (where[key].operator) {
-                    whereSql.push(`${where[key].col} ${where[key].operator} ${where[key].value}`);
-                } else {
-                    whereSql.push(`${where[key].col} = ${where[key].value}`);
+                if (contWhere > 0) {
+                    query += ` AND `;
                 }
+                if (where[key].operator) {
+                    query += `${where[key].col} ${where[key].operator} ?`;
+                    params.push(where[key].value);
+                } else {
+                    query += `${where[key].col} = ?`;
+                    params.push(where[key].value);
+                }
+                contWhere++;
             }
         }
 
-        if (whereSql.length > 0) {
-            query += `WHERE ${whereSql.join(`,`)} `
-        }
-
-        return this.query(`${query};`);
+        return this.query(`${query};`, params);
     }
 
     /**
@@ -203,6 +238,7 @@ export class Mysql {
      * @param where 
      */
     public update(table: string, set: any, where: Array<WhereModel>) {
+        var params = [];
         var query = `UPDATE ${table} SET `;
 
         let cont = 0;
@@ -211,26 +247,32 @@ export class Mysql {
                 query += `,`;
             }
 
-            query += `${key} = ${set[key]} `;
+            query += `${key} = ? `;
+            params.push(set[key]);
             cont++;
         }
 
-        var whereSql = [];
+
+
         if (where) {
+            let contWhere = 0;
+            query += `WHERE `;
             for (var key in where) {
-                if (where[key].operator) {
-                    whereSql.push(`${where[key].col} ${where[key].operator} ${where[key].value}`);
-                } else {
-                    whereSql.push(`${where[key].col} = ${where[key].value}`);
+                if (contWhere > 0) {
+                    query += ` AND `;
                 }
+                if (where[key].operator) {
+                    query += `${where[key].col} ${where[key].operator} ?`;
+                    params.push(where[key].value);
+                } else {
+                    query += `${where[key].col} = ?`;
+                    params.push(where[key].value);
+                }
+                contWhere++;
             }
         }
 
-        if (whereSql.length > 0) {
-            query += `WHERE ${whereSql.join(`,`)} `
-        }
-
-        return this.query(`${query};`);
+        return this.query(`${query};`, params);
     }
 }
 

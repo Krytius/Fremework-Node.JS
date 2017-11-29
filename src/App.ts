@@ -2,7 +2,18 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import { RequestHandler } from 'express';
 import { Routes } from './Routes';
+import * as cors from "cors";
+import { Postback } from './middleware/Postback';
+import { Config } from './Config';
+import { RouterHelper } from './helpers/RouterHelper';
 
+const options: cors.CorsOptions = {
+    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "X-Access-Token"],
+    credentials: true,
+    methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
+    origin: "*",
+    preflightContinue: false
+};
 
 class Main {
 
@@ -12,9 +23,14 @@ class Main {
         this.express = express();
         this.middleware();
         this.routes();
+        this.postback();
     }
 
+    /**
+     * Middlewares da api
+     */
     private middleware(): void {
+        this.express.use(cors(options));
         this.express.use(bodyParser.json());
         this.express.use(bodyParser.urlencoded({ extended: false }));
     }
@@ -23,61 +39,17 @@ class Main {
      * Regra de endpoints da API
      */
     private routes(): void {
-
         let router = express.Router();
-
         let routes: any = Routes.routes();
-        for (var key in routes) {
+        RouterHelper.mapRoutes(routes, router);
+        this.express.use('/' + Config.URL_API_PREFIX, router);
+    }
 
-            var obj = routes[key];
-            var middleware = function (req, res, next) {
-                next();
-            };
-
-            if (typeof (obj.middleware) != `undefined`) {
-                middleware = obj.middleware;
-            }
-
-            if (typeof (obj.method) != `undefined`) {
-                if (obj.method) {
-                    switch (obj.method) {
-                        case `GET`:
-                            router.get(obj.path, [middleware], obj.controller);
-                            break;
-                        case `DELETE`:
-                            router.delete(obj.path, [middleware], obj.controller);
-                            break;
-                        case `PUT`:
-                            router.put(obj.path, [middleware], obj.controller);
-                            break;
-                        case `POST`:
-                            router.post(obj.path, [middleware], obj.controller);
-                            break;
-                    }
-                    continue;
-                }
-            } else {
-                var controller = new obj.controller();
-
-                if (typeof (controller.post) == `function`)
-                    router.post(obj.path, [middleware], controller.post);
-
-                if (typeof (controller.get) == `function`)
-                    router.get(obj.path, [middleware], controller.get);
-
-                if (typeof (controller.getOne) == `function`)
-                    router.get(`${obj.path}/:id`, [middleware], controller.getOne);
-
-                if (typeof (controller.put) == `function`)
-                    router.put(`${obj.path}/:id`, [middleware], controller.put);
-
-                if (typeof (controller.delete) == `function`)
-                    router.delete(`${obj.path}/:id`, [middleware], controller.delete);
-            }
-        }
-
-
-        this.express.use('/', router);
+    /**
+     * Tratamentos de erros
+     */
+    private postback() {
+        this.express.use(Postback.error);
     }
 
 }

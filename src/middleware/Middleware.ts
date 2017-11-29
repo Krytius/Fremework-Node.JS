@@ -1,8 +1,14 @@
-import { Router, Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 
 export class Middleware {
 
-    public static start(req: Request, res: Response, next: NextFunction) {
+    /**
+     * Auth basic
+     * @param req 
+     * @param res 
+     * @param next 
+     */
+    public static auth(req: Request, res: Response, next: NextFunction) {
 
         var auth = req.get("authorization");
 
@@ -19,10 +25,7 @@ export class Middleware {
                 return res.status(403).send("Access Denied (incorrect credentials)");
             }
 
-        }
-
-
-        
+        } 
     }
 
 }

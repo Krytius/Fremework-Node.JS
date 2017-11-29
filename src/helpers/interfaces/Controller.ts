@@ -1,9 +1,9 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 
 export interface Controller {
-    post(req: Request, res: Response)
-    get(req: Request, res: Response)
-    getOne(req: Request, res: Response)
-    put(req: Request, res: Response)
-    delete(req: Request, res: Response)
+    post(req: Request, res: Response, next: NextFunction)
+    get(req: Request, res: Response, next: NextFunction)
+    getOne(req: Request, res: Response, next: NextFunction)
+    put(req: Request, res: Response, next: NextFunction)
+    delete(req: Request, res: Response, next: NextFunction)
 }
