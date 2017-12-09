@@ -6,7 +6,7 @@ export class Database {
 
     private driver;
 
-    constructor(next: NextFunction) {
+    constructor(next?: NextFunction) {
         switch (Config.DatabaseType) {
             case `mysql`:
                 this.driver = new Mysql(next);
@@ -97,7 +97,7 @@ export class Database {
 }
 
 export class WhereModel {
-    col: string
-    value: any
-    operator: string
+    col: string;
+    value: any;
+    operator?: string = "=";
 }

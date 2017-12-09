@@ -3,10 +3,9 @@ import { Database, WhereModel } from "../database/Database";
 import { Controller } from "../helpers/interfaces/Controller";
 import { NextFunction } from "express-serve-static-core";
 import { OutError } from "../helpers/interfaces/OutError";
+import { TokenHelper } from "../helpers/helper/TokenHelper";
 
 export class TestController implements Controller {
-
-    
 
     // POST /test
     public post(req: Request, res: Response, next: NextFunction) {
@@ -16,32 +15,43 @@ export class TestController implements Controller {
             id: req.body.id
         };
 
-        // Start transaction
-        db.startTransaction();
+        let resp: OutError = {
+            code: 0,
+            message: "Execução concluída.",
+            error: false,
+            data: {}
+        }
 
-        // Insert example
-        db.insert(`Usuario`, item)
-            .then(result => {
-                db.commit();
-                res.json(result);
-            });
+        next(resp);
     }
 
     // GET /test
     public get(req: Request, res: Response, next: NextFunction) {
-        let db = new Database(next.bind(this));
-        db.get(`Usuario`)
-            .then(result => {
-                res.json(result);
-            });
+        TokenHelper.getUser(req).then(resp => {
+            let error: OutError = {
+                code: 0,
+                message: `OK`,
+                data: resp
+            };
+
+            next(error);
+        });
     }
 
     // GET /test/:id
     public getOne(req: Request, res: Response, next: NextFunction) {
         let db = new Database(next);
-        db.getRow(`Usuario`, req.params.id)
+        db.getRow(`User`, req.params.id)
             .then((result) => {
-                res.json(result);
+
+                let resp: OutError = {
+                    code: 0,
+                    message: "Execução concluída.",
+                    error: false,
+                    data: result
+                }
+
+                next(resp);
             });
     }
 
@@ -57,6 +67,28 @@ export class TestController implements Controller {
         res.json({
             message: `DELETE`
         });
+    }
+
+    // VIEW /test/view
+    public view(req: Request, res: Response, next: NextFunction) {
+        let db = new Database(next);
+        db.get(`User`)
+            .then((result) => {
+                res.render(`pages/index`, {
+                    users: result
+                });
+            });
+    }
+
+    // VIEW /test/view/:id
+    public viewDetail(req: Request, res: Response, next: NextFunction) {
+        let db = new Database(next);
+        db.get(`User`)
+            .then((result) => {
+                res.render(`pages/index`, {
+                    users: result
+                });
+            });
     }
 
 }

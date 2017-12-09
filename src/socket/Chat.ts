@@ -1,10 +1,11 @@
 import { Config } from "../Config";
 import { ClientSocket } from "./client/ClientSocket";
+import { setTimeout } from "timers";
 
 export class Chat {
 
     public socket;
-    
+
     constructor(socket) {
         this.socket = socket;
         this.socket.on('clientIdent', this.clientIdent.bind(this));
@@ -71,7 +72,7 @@ export class Chat {
             from: this.socket.user.nome,
             text: data.message
         };
-        
+
         if (Config.DEBUG) {
             console.log(message);
         }

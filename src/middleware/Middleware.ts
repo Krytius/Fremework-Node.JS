@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { OutError } from "../helpers/interfaces/OutError";
+import { TokenHelper } from "../helpers/helper/TokenHelper";
 
 export class Middleware {
 
@@ -9,23 +11,30 @@ export class Middleware {
      * @param next 
      */
     public static auth(req: Request, res: Response, next: NextFunction) {
-
+        
         var auth = req.get("authorization");
 
+        let error: OutError = {
+            code: 403,
+            message: "Access Denied (incorrect credentials)"
+        };
+
         if (!auth) {
-            res.set("WWW-Authenticate", "Basic realm=\"Authorization Required\"");
-            return res.status(401).send("Authorization Required");
+            return res.status(401).send(error);
         } else {
-            var credentials = new Buffer(auth.split(" ").pop(), "base64").toString("ascii").split(":");
-            
-            // Implementar usuario e senha
-            if (credentials[0] === "username" && credentials[1] === "password") {
-                next();
+            var credentials = auth.split(" ");
+
+            if (credentials[0] === "Bearer") {
+                TokenHelper.validate(credentials[1]).then(idUser => {
+                    next();
+                }).catch(error => {
+                    next(error);
+                });
             } else {
-                return res.status(403).send("Access Denied (incorrect credentials)");
+                return res.status(403).send(error);
             }
 
-        } 
+        }
     }
 
 }

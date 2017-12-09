@@ -7,6 +7,7 @@ const JSON_FILES = ['src/*.json', 'src/**/*.json'];
 const tsProject = ts.createProject('tsconfig.json');
 
 var node;
+var timeout;
 
 gulp.task('scripts', () => {
     const tsResult = tsProject.src().pipe(tsProject());
@@ -15,6 +16,7 @@ gulp.task('scripts', () => {
 
 gulp.task('watch', ['scripts', 'assets', 'server'], () => {
     gulp.watch('src/**/*.ts', ['scripts', 'assets', 'server']);
+    gulp.watch('src/**/*.ejs', ['scripts', 'assets', 'server']);
 });
 
 gulp.task('assets', function() {
@@ -25,9 +27,10 @@ gulp.task('server', function() {
     if (node) {
         console.log('Node Stop.');
         node.kill();
+        clearTimeout(timeout);
     }
 
-    setTimeout(function() {
+    timerout = setTimeout(function() {
         console.log('Node Start.');
         node = spawn('node', ['./dist/Index.js'], { stdio: 'inherit' })
         node.on('close', function(code) {

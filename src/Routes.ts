@@ -1,7 +1,8 @@
-import { RouterHelper } from "./helpers/RouterHelper";
-import { Middleware } from "./middleware/Middleware";
+import { RouterHelper, Route } from "./helpers";
+import { Middleware } from "./middleware";
 
 import { TestController } from "./controller/Test";
+import { LoginController } from "./controller/Login";
 
 
 export class Routes {
@@ -11,11 +12,18 @@ export class Routes {
      */
     private static v1() {
         let prefix = '/v1';
-        let routes = [
+
+        let routes: Array<Route> = [
+            {
+                method: 'POST',
+                path: `/Login`,
+                controller: new LoginController().post
+            },
             {
                 path: `/test`,
+                middleware: Middleware.auth,
                 controller: TestController
-            }
+            },
         ];
 
         return RouterHelper.setRoutes(routes, prefix);

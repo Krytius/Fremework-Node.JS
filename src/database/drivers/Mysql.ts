@@ -6,12 +6,12 @@ import { OutError } from "../../helpers/interfaces/OutError";
 
 export class Mysql {
 
-    private next: NextFunction;
+    private next: any;
     private connection;
     private transaction = false;
 
-    constructor(next: NextFunction) {
-        this.next = next;
+    constructor(next?: NextFunction) {
+        this.next = (next) ? next : false;
     }
 
     /**
@@ -27,7 +27,9 @@ export class Mysql {
                     code: 1000
                 }
 
-                this.next(error);
+                if (typeof (this.next) == 'function') {
+                    this.next(error);
+                }
             }
         });
     }
@@ -86,9 +88,9 @@ export class Mysql {
         let end = this.end.bind(this);
         let rollback = this.rollback.bind(this);
         let connection = this.connection;
-        
+
         return new Promise((resolve, reject) => {
-        
+
             var sql = connection.query(query, (params) ? params : [], (error, results, fields) => {
                 if (error) {
 
@@ -110,7 +112,7 @@ export class Mysql {
                 if (!transaction) {
                     end();
                 }
-                
+
             });
 
         });

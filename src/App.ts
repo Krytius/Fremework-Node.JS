@@ -1,11 +1,11 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+import * as cors from "cors";
 import { RequestHandler } from 'express';
 import { Routes } from './Routes';
-import * as cors from "cors";
-import { Postback } from './middleware/Postback';
+import { Postback } from './middleware';
 import { Config } from './Config';
-import { RouterHelper } from './helpers/RouterHelper';
+import { RouterHelper } from './helpers';
 
 const options: cors.CorsOptions = {
     allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "X-Access-Token"],
@@ -21,9 +21,14 @@ class Main {
 
     constructor() {
         this.express = express();
+        this.views();
         this.middleware();
         this.routes();
         this.postback();
+    }
+
+    private views() {
+        this.express.set('view engine', 'ejs');
     }
 
     /**
@@ -49,7 +54,7 @@ class Main {
      * Tratamentos de erros
      */
     private postback() {
-        this.express.use(Postback.error);
+        this.express.use(new Postback().error);
     }
 
 }

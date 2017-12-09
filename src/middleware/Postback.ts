@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { Config } from "../Config";
+import { OutError } from "../helpers/interfaces/OutError";
+import { TokenHelper } from "../helpers/helper/TokenHelper";
 
 export class Postback {
 
@@ -10,18 +12,29 @@ export class Postback {
      * @param res 
      * @param next 
      */
-    public static error(err: any, req: Request, res: Response, next: NextFunction) {
-        let error = {
-            error: true,
-            message: err.message,
-            code: err.code
-        };
+    public error(err: OutError, req: Request, res: Response, next: NextFunction) {
 
-        if (Config.DEBUG) {
-            console.log(error);
+        if(err.code == 403) {
+            res.status(err.code).json(err);
+            return;
         }
 
-        res.status(500).json(error);
+        if (err.code != 0) {
+            let error: OutError = {
+                error: true,
+                message: err.message,
+                code: err.code,
+                data: {}
+            };
+
+            if (Config.DEBUG) {
+                console.log(error);
+            }
+
+            res.status(500).json(error);
+        } else {
+            res.status(200).json(err);
+        }
     }
 
 
