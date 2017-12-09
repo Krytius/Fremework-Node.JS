@@ -21,7 +21,7 @@ export class Routes {
             },
             {
                 path: `/test`,
-                middleware: Middleware.auth,
+                //middleware: Middleware.auth,
                 controller: TestController
             },
         ];
@@ -35,6 +35,7 @@ export class Routes {
     public static routes() {
         let v0 = [];
         let v1 = this.v1();
+
 
         let apis = v0.concat(v1);
         return apis;

@@ -1,15 +1,13 @@
-import { Router, Request, Response } from "express";
-import { Database, WhereModel } from "../database/Database";
-import { Controller } from "../helpers/interfaces/Controller";
-import { NextFunction } from "express-serve-static-core";
-import { OutError } from "../helpers/interfaces/OutError";
-import { TokenHelper } from "../helpers/helper/TokenHelper";
+import { Router, Request, Response, NextFunction } from "express";
+import { Database, WhereModel } from "../database";
+import { TokenHelper, Controller, OutError } from "../helpers";
+
+
 
 export class TestController implements Controller {
 
     // POST /test
     public post(req: Request, res: Response, next: NextFunction) {
-        let db = new Database(next.bind(this));
 
         var item = {
             id: req.body.id

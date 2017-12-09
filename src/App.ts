@@ -44,6 +44,8 @@ class Main {
      * Regra de endpoints da API
      */
     private routes(): void {
+        this.express.use('/images', express.static(`${Config.DIR}/storage/`));
+
         let router = express.Router();
         let routes: any = Routes.routes();
         RouterHelper.mapRoutes(routes, router);

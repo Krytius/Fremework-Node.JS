@@ -1,4 +1,5 @@
 export class Config {
+    public static DIR = __dirname;
     public static DEBUG = true;
     public static PORT = 3000;
 
