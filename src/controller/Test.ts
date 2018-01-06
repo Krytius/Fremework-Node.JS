@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { Database, WhereModel } from "../database";
 import { TokenHelper, Controller, OutError } from "../helpers";
+import { worker } from "cluster";
 
 
 
@@ -17,7 +18,9 @@ export class TestController implements Controller {
             code: 0,
             message: "Execução concluída.",
             error: false,
-            data: {}
+            data: {
+                worker: worker.id
+            }
         }
 
         next(resp);

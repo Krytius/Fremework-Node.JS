@@ -23,20 +23,24 @@ export class UploadHelper {
 
                 var index = old_path.lastIndexOf('/') + 1;
                 var file_name = old_path.substr(index);
-                var newName = (name) ? name : file_name;
-                var new_path = path.join(Config.DIR, 'storage/', pathUpload, '/' + newName + '.' + file_ext);
+                var newName = ((name) ? name : file_name) + '.' + file_ext;
+                var new_path = path.join(Config.DIR, 'storage/', pathUpload, '/' + newName);
 
                 if (Config.DEBUG) {
                     console.log(new_path);
                 }
 
-                fs.readFile(old_path, function (err, data) {
-                    fs.writeFile(new_path, data, function (err) {
-                        fs.unlink(old_path, function (err) {
+                fs.readFile(old_path, (err, data) => {
+                    fs.writeFile(new_path, data, (err) => {
+                        fs.unlink(old_path, (err) => {
                             if (err) {
-                                reject({ 'success': false });
+                                reject({ success: false });
                             } else {
-                                resolve({ 'success': true });
+                                resolve({
+                                    success: true,
+                                    path: new_path,
+                                    file: newName
+                                });
                             }
                         });
                     });
@@ -54,9 +58,9 @@ export class UploadHelper {
             var new_path = path.join(Config.DIR, 'storage/', pathRemove);
             fs.unlink(new_path, function (err) {
                 if (err) {
-                    reject({ 'success': false });
+                    reject({ success: false });
                 } else {
-                    resolve({ 'success': true });
+                    resolve({ success: true });
                 }
             });
         });
