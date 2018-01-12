@@ -3,6 +3,7 @@ export { InjectInputHelper } from './helper/InjectInputHelper';
 export { UploadHelper } from './helper/UploadHelper';
 export { CryptHelper } from './helper/CryptHelper';
 export { TokenHelper } from './helper/TokenHelper';
+export { ValidationHelper } from './helper/ValidationHelper';
 
 export { Controller } from './interfaces/Controller';
 export { OutError } from './interfaces/OutError';

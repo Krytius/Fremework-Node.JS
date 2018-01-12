@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import * as cors from "cors";
 import { RequestHandler } from 'express';
@@ -44,7 +45,8 @@ class Main {
      * Regra de endpoints da API
      */
     private routes(): void {
-        this.express.use('/images', express.static(`${Config.DIR}/storage/`));
+        this.express.use('/images', express.static(path.join(`${Config.DIR}`, '../storage')));
+        this.express.use(express.static(path.join(`${Config.DIR}`, '../frontend')));
 
         let router = express.Router();
         let routes: any = Routes.routes();

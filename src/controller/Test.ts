@@ -28,15 +28,13 @@ export class TestController implements Controller {
 
     // GET /test
     public get(req: Request, res: Response, next: NextFunction) {
-        TokenHelper.getUser(req).then(resp => {
-            let error: OutError = {
-                code: 0,
-                message: `OK`,
-                data: resp
-            };
+        let error: OutError = {
+            code: 0,
+            message: `OK`,
+            data: {}
+        };
 
-            next(error);
-        });
+        next(error);
     }
 
     // GET /test/:id

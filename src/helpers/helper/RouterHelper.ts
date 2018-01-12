@@ -54,24 +54,24 @@ export class RouterHelper {
                 var controller = new obj.controller();
 
                 if (typeof (controller.view) == `function`) {
-                    router.get(`${obj.path}/view`, middleware, controller.view.bind(this));
-                    router.get(`${obj.path}/view/:id`, middleware, controller.viewDetail.bind(this));
+                    router.get(`${obj.path}/view`, middleware, (req, res, next) => { new obj.controller().view(req, res, next); });
+                    router.get(`${obj.path}/view/:id`, middleware, (req, res, next) => { new obj.controller().viewDetail(req, res, next); });
                 }
 
                 if (typeof (controller.post) == `function`)
-                    router.post(obj.path, middleware, controller.post.bind(this));
+                    router.post(obj.path, middleware, (req, res, next) => { new obj.controller().post(req, res, next); });
 
                 if (typeof (controller.get) == `function`)
-                    router.get(obj.path, middleware, controller.get.bind(this));
+                    router.get(obj.path, middleware, (req, res, next) => { new obj.controller().get(req, res, next); });
 
                 if (typeof (controller.getOne) == `function`)
-                    router.get(`${obj.path}/:id`, middleware, controller.getOne.bind(this));
+                    router.get(`${obj.path}/:id`, middleware, (req, res, next) => { new obj.controller().getOne(req, res, next); });
 
                 if (typeof (controller.put) == `function`)
-                    router.put(`${obj.path}/:id`, middleware, controller.put.bind(this));
+                    router.put(`${obj.path}/:id`, middleware, (req, res, next) => { new obj.controller().put(req, res, next); });
 
                 if (typeof (controller.delete) == `function`)
-                    router.delete(`${obj.path}/:id`, middleware, controller.delete.bind(this));
+                    router.delete(`${obj.path}/:id`, middleware, (req, res, next) => { new obj.controller().delete(req, res, next); });
             }
         }
 
