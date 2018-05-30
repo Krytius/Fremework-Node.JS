@@ -8,8 +8,10 @@ import { Postback } from './middleware';
 import { Config } from './Config';
 import { RouterHelper } from './helpers';
 
+const expressListRoutes = require('express-list-routes');
+
 const options: cors.CorsOptions = {
-    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "X-Access-Token"],
+    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
     credentials: true,
     methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
     origin: "*",
@@ -50,8 +52,12 @@ class Main {
 
         let router = express.Router();
         let routes: any = Routes.routes();
-        RouterHelper.mapRoutes(routes, router);
-        this.express.use('/' + Config.URL_API_PREFIX, router);
+        router = RouterHelper.mapRoutes(routes, router);
+        this.express.use(router);
+
+        if (Config.VIEWAPI) {
+            expressListRoutes({}, 'API:', router);
+        }
     }
 
     /**

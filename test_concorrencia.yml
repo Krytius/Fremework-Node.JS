@@ -5,7 +5,16 @@ config:
       arrivalRate: 20
 scenarios:
   -
-    name: 'Teste de performance'
+    name: 'Listagem Usuários'
     flow:
+    - get:
+        url: "/usuario/pf"
+  -
+    name: 'Categorias'
+    flow:
+    - get:
+        url: "/categorias"
     - post:
-        url: "/test"
+        url: "/categorias"
+        json:
+          nome: "Elvis"

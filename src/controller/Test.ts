@@ -70,13 +70,7 @@ export class TestController implements Controller {
 
     // VIEW /test/view
     public view(req: Request, res: Response, next: NextFunction) {
-        let db = new Database(next);
-        db.get(`User`)
-            .then((result) => {
-                res.render(`pages/index`, {
-                    users: result
-                });
-            });
+        res.render(`pages/index`, {});
     }
 
     // VIEW /test/view/:id

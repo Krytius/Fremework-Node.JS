@@ -140,7 +140,7 @@ export class Mysql {
 
         query += `FROM ${table} `;
 
-        if (where) {
+        if (where.length > 0) {
             let contWhere = 0;
             query += `WHERE `;
             for (var key in where) {
@@ -164,12 +164,13 @@ export class Mysql {
         }
 
         if (limit) {
-            query += `LIMIT ?`
+            query += `LIMIT ? `
             params.push(limit);
-            if (offset) {
-                query += `,?`
-                params.push(offset);
-            }
+        }
+
+        if (offset) {
+            query += `OFFSET ?`
+            params.push(offset);
         }
 
         return this.query(query, params);

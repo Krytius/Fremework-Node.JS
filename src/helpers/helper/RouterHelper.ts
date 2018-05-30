@@ -52,26 +52,25 @@ export class RouterHelper {
                 }
             } else {
                 var controller = new obj.controller();
-
                 if (typeof (controller.view) == `function`) {
-                    router.get(`${obj.path}/view`, middleware, (req, res, next) => { new obj.controller().view(req, res, next); });
-                    router.get(`${obj.path}/view/:id`, middleware, (req, res, next) => { new obj.controller().viewDetail(req, res, next); });
+                    router.get(`${obj.path}/view`, middleware, controller.view.bind(this));
+                    router.get(`${obj.path}/view/:id`, middleware, controller.viewDetail.bind(this));
                 }
 
                 if (typeof (controller.post) == `function`)
-                    router.post(obj.path, middleware, (req, res, next) => { new obj.controller().post(req, res, next); });
+                    router.post(obj.path, middleware, controller.post.bind(this));
 
                 if (typeof (controller.get) == `function`)
-                    router.get(obj.path, middleware, (req, res, next) => { new obj.controller().get(req, res, next); });
+                    router.get(obj.path, middleware, controller.get.bind(this));
 
                 if (typeof (controller.getOne) == `function`)
-                    router.get(`${obj.path}/:id`, middleware, (req, res, next) => { new obj.controller().getOne(req, res, next); });
+                    router.get(`${obj.path}/:id`, middleware, controller.getOne.bind(this));
 
                 if (typeof (controller.put) == `function`)
-                    router.put(`${obj.path}/:id`, middleware, (req, res, next) => { new obj.controller().put(req, res, next); });
+                    router.put(`${obj.path}/:id`, middleware, controller.put.bind(this));
 
                 if (typeof (controller.delete) == `function`)
-                    router.delete(`${obj.path}/:id`, middleware, (req, res, next) => { new obj.controller().delete(req, res, next); });
+                    router.delete(`${obj.path}/:id`, middleware, controller.delete.bind(this));
             }
         }
 

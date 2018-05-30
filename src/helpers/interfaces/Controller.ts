@@ -6,6 +6,6 @@ export interface Controller {
     getOne(req: Request, res: Response, next: NextFunction)
     put(req: Request, res: Response, next: NextFunction)
     delete(req: Request, res: Response, next: NextFunction)
-    view(req: Request, res: Response, next: NextFunction)
-    viewDetail(req: Request, res: Response, next: NextFunction)
+    view?(req: Request, res: Response, next: NextFunction)
+    viewDetail?(req: Request, res: Response, next: NextFunction)
 }

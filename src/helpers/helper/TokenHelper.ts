@@ -42,15 +42,16 @@ export class TokenHelper {
                     }
 
                     if (resp.length == 0) {
-                        error.message = `Token não existe.`
+                        error.message = `Tempo de uso expirado.`
+                        error.code = 1000;
                         reject(error);
                         return;
                     }
 
                     let date = new Date();
                     if (resp[0].timeout < date.getTime()) {
-                        error.message = `Token expirado.`
-                        db.delete(`Token`, [{ col: `token`, value: token }]);
+                        error.message = `Tempo de uso expirado.`
+                        error.code = 1001;
                         reject(error);
                         return;
                     }

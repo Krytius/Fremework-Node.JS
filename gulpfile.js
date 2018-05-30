@@ -1,4 +1,4 @@
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
 const JSON_FILES = ['src/*.json', 'src/**/*.json'];
@@ -23,6 +23,13 @@ gulp.task('assets', function() {
     return gulp.src(JSON_FILES).pipe(gulp.dest('dist'));
 });
 
+gulp.task('angular', function() {
+    exec('cd ./FrontendSource/ && npm run build', function(err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+    });
+});
+
 gulp.task('server', function() {
     if (node) {
         console.log('Node Stop.');
@@ -42,3 +49,4 @@ gulp.task('server', function() {
 });
 
 gulp.task('default', ['scripts', 'assets', 'server', 'watch']);
+gulp.task('deploy', ['scripts', 'assets', 'angular']);

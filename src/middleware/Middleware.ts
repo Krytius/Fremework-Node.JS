@@ -12,7 +12,7 @@ export class Middleware {
      */
     public static auth(req: Request, res: Response, next: NextFunction) {
         
-        var auth = req.get("authorization");
+        var auth = req.get("Authorization");
 
         let error: OutError = {
             code: 403,
