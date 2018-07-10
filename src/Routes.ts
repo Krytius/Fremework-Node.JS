@@ -1,10 +1,7 @@
-import * as path from 'path';
 import { Config } from './Config';
-import { RouterHelper, Route } from "./helpers";
-import { Middleware } from "./middleware";
+import { Route, RouterHelper } from '.';
 
-import { LoginController } from "./controller/Login";
-import { TestController } from './controller/Test';
+import { LoginController } from './controller';
 
 
 export class Routes {
@@ -29,19 +26,7 @@ export class Routes {
     private static panel() {
         let prefix = '';
 
-        let routes: Array<Route> = [
-            {
-                method: 'VIEW',
-                path: `/`,
-                controller: (req, res) => {
-                    res.sendFile(path.join(__dirname, 'frontend/index.html'));
-                }
-            },{
-                path: `/test`,
-                //middleware: Middleware.auth,
-                controller: TestController
-            }
-        ];
+        let routes: Array<Route> = [];
 
         return RouterHelper.setRoutes(routes, prefix);
     }
@@ -54,7 +39,9 @@ export class Routes {
         let panel = this.panel();
         let v1 = this.v1();
 
-        let apis = v0.concat(panel).concat(v1);
+        let apis = v0
+            .concat(v1)
+            .concat(panel);
         return apis;
     }
 

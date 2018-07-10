@@ -1,1 +1,1 @@
-export { Database, WhereModel } from './Database';
+export * from './Database';

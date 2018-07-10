@@ -1,14 +1,13 @@
-import { Router, Request, Response, NextFunction } from "express";
-import { Database, WhereModel } from "../database";
-import { TokenHelper, Controller, OutError } from "../helpers";
+import { Response, NextFunction } from "express";
 import { worker } from "cluster";
+import { IRequest, OutError, Database, Controller } from "..";
 
 
 
 export class TestController implements Controller {
 
     // POST /test
-    public post(req: Request, res: Response, next: NextFunction) {
+    public post(req: IRequest, res: Response, next: NextFunction) {
 
         var item = {
             id: req.body.id
@@ -27,7 +26,7 @@ export class TestController implements Controller {
     }
 
     // GET /test
-    public get(req: Request, res: Response, next: NextFunction) {
+    public get(req: IRequest, res: Response, next: NextFunction) {
         let error: OutError = {
             code: 0,
             message: `OK`,
@@ -38,7 +37,7 @@ export class TestController implements Controller {
     }
 
     // GET /test/:id
-    public getOne(req: Request, res: Response, next: NextFunction) {
+    public getOne(req: IRequest, res: Response, next: NextFunction) {
         let db = new Database(next);
         db.getRow(`User`, req.params.id)
             .then((result) => {
@@ -55,26 +54,26 @@ export class TestController implements Controller {
     }
 
     // PUT /test/:id
-    public put(req: Request, res: Response, next: NextFunction) {
+    public put(req: IRequest, res: Response, next: NextFunction) {
         res.json({
             message: `PUT`
         });
     }
 
     // DELETE /test/:id
-    public delete(req: Request, res: Response, next: NextFunction) {
+    public delete(req: IRequest, res: Response, next: NextFunction) {
         res.json({
             message: `DELETE`
         });
     }
 
     // VIEW /test/view
-    public view(req: Request, res: Response, next: NextFunction) {
+    public view(req: IRequest, res: Response, next: NextFunction) {
         res.render(`pages/index`, {});
     }
 
     // VIEW /test/view/:id
-    public viewDetail(req: Request, res: Response, next: NextFunction) {
+    public viewDetail(req: IRequest, res: Response, next: NextFunction) {
         let db = new Database(next);
         db.get(`User`)
             .then((result) => {

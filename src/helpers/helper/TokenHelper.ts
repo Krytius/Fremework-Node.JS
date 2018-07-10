@@ -1,7 +1,6 @@
 import { Config } from "../../Config";
-import { CryptHelper } from "./CryptHelper";
-import { Database } from "../../database/Database";
-import { OutError } from "../interfaces/OutError";
+import { CryptHelper, DateHelper } from "..";
+import { Database, OutError } from "../..";
 
 export class TokenHelper {
 
@@ -20,7 +19,7 @@ export class TokenHelper {
         db.insert(`Token`, {
             token: crypt,
             idUser: idUser,
-            timeout: date.getTime()
+            timeout: Config.TOKEN_EXPIRATION_MINUTES * 60
         });
 
         return crypt;
@@ -43,22 +42,13 @@ export class TokenHelper {
 
                     if (resp.length == 0) {
                         error.message = `Tempo de uso expirado.`
-                        error.code = 1000;
+                        error.code = 403;
                         reject(error);
                         return;
                     }
 
-                    let date = new Date();
-                    if (resp[0].timeout < date.getTime()) {
-                        error.message = `Tempo de uso expirado.`
-                        error.code = 1001;
-                        reject(error);
-                        return;
-                    }
-
-                    date.setMinutes(date.getMinutes() + Config.TOKEN_EXPIRATION_MINUTES);
                     db.update(`Token`, {
-                        timeout: date.getTime()
+                        date: DateHelper.convert(new Date().getTime())
                     }, [{ col: `token`, value: token }]);
                     resolve(resp[0].idUser);
                 });
@@ -67,19 +57,14 @@ export class TokenHelper {
 
     }
 
-    public static getUser(req) {
-        var auth = req.get("authorization");
-        var credentials = auth.split(" ");
+    public static getUser(idUser) {
         return new Promise((resolve, reject) => {
             let db = new Database();
-            db.get(`Token`, [`idUser`, `timeout`], [{ col: `token`, value: credentials[1] }])
-                .then(resp => {
-                    db.get(`User`, [`id`, `name`, `email`, `IdProfile`], [
-                        { col: `id`, value: resp[0].idUser }
-                    ]).then(r => {
-                        resolve(r[0]);
-                    });
-                });
+            db.get(`User`, [`id`, `name`, `email`, `IdProfile`], [
+                { col: `id`, value: idUser }
+            ]).then(r => {
+                resolve(r[0]);
+            });
         });
     }
 

@@ -1,16 +1,15 @@
-import { Request, Response, NextFunction } from "express";
-import { OutError } from "../helpers/interfaces/OutError";
-import { TokenHelper } from "../helpers/helper/TokenHelper";
+import { Response, NextFunction } from "express";
+import { IRequest, TokenHelper, OutError } from "..";
 
 export class Middleware {
-
+    
     /**
      * Auth basic
      * @param req 
      * @param res 
      * @param next 
      */
-    public static auth(req: Request, res: Response, next: NextFunction) {
+    public static auth(req: IRequest, res: Response, next: NextFunction) {
         
         var auth = req.get("Authorization");
 
@@ -25,7 +24,11 @@ export class Middleware {
             var credentials = auth.split(" ");
 
             if (credentials[0] === "Bearer") {
-                TokenHelper.validate(credentials[1]).then(idUser => {
+                TokenHelper.validate(credentials[1]).then(async (idUser: number) => {
+
+                    req.idUser = idUser;
+                    req.user = await TokenHelper.getUser(idUser);
+
                     next();
                 }).catch(error => {
                     next(error);

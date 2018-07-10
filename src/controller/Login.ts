@@ -1,12 +1,10 @@
-import { Router, Request, Response, NextFunction } from "express";
-import { Database, WhereModel } from "../database";
-import { OutError, TokenHelper } from "../helpers";
-import { CryptHelper } from "../helpers/helper/CryptHelper";
+import { Response, NextFunction } from "express";
+import { IRequest, Database, WhereModel, OutError, CryptHelper, TokenHelper } from "..";
 
 export class LoginController {
 
     // POST /Login
-    public post(req: Request, res: Response, next: NextFunction) {
+    public post(req: IRequest, res: Response, next: NextFunction) {
         let self = new LoginController();
         let auth = req.body;
         let db = new Database(next.bind(this));

@@ -1,0 +1,22 @@
+config:
+  target: 'http://localhost:3000/api/v1'
+  phases:
+    - duration: 60
+      arrivalRate: 20
+scenarios:
+  -
+    name: 'Inserir Categoria'
+    flow:
+    - post:
+        url: "/category"
+        json:
+          name: "Teste"
+          description: "Teste"
+  -
+    name: 'Alterar Categoria'
+    flow:
+    - put:
+        url: "/category/1"
+        json:
+          name: "Teste"
+          description: "Teste"

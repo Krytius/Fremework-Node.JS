@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as formidable from 'formidable';
-import { resolve } from 'dns';
 import { Config } from '../../Config';
 
 export class UploadHelper {

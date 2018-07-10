@@ -1,6 +1,6 @@
-import { Config } from "../Config";
 import { ClientSocket } from "./client/ClientSocket";
-import { setTimeout } from "timers";
+import { Config } from "../Config";
+
 
 export class Chat {
 

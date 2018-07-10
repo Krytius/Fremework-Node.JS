@@ -1,7 +1,6 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { Config } from "../Config";
-import { OutError } from "../helpers/interfaces/OutError";
-import { TokenHelper } from "../helpers/helper/TokenHelper";
+import { OutError, IRequest } from "..";
 
 export class Postback {
 
@@ -12,7 +11,7 @@ export class Postback {
      * @param res 
      * @param next 
      */
-    public error(err: OutError, req: Request, res: Response, next: NextFunction) {
+    public error(err: OutError, req: IRequest, res: Response, next: NextFunction) {
 
         if(err.code == 403) {
             res.status(err.code).json(err);

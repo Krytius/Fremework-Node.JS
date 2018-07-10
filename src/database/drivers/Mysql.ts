@@ -1,8 +1,7 @@
-import { createConnection, QueryError, RowDataPacket } from "mysql";
+import { createConnection } from "mysql";
 import { NextFunction } from "express";
 import { Config } from "../../Config";
-import { WhereModel } from "../Database";
-import { OutError } from "../../helpers/interfaces/OutError";
+import { TypeConnection, WhereModel, OutError } from "../..";
 
 export class Mysql {
 
@@ -17,8 +16,30 @@ export class Mysql {
     /**
      * Abre a conexão
      */
-    private start() {
-        this.connection = createConnection(Config.Connection);
+    private start(type: TypeConnection) {
+
+        switch (type) {
+            case TypeConnection.WRITE:
+                for (var key in Config.Connection) {
+                    if (Config.Connection[key].type == TypeConnection.WRITE || Config.Connection[key].type == TypeConnection.ALL) {
+                        this.connection = createConnection(Config.Connection[key]);
+                    }
+                }
+                break;
+            case TypeConnection.READ:
+                for (var key in Config.Connection) {
+                    if (Config.Connection[key].type == TypeConnection.READ || Config.Connection[key].type == TypeConnection.ALL) {
+                        this.connection = createConnection(Config.Connection[key]);
+                    }
+                }
+                break;
+        }
+
+        if(Config.DEBUG) {
+            console.log("Connection Type", type, this.connection);
+        }
+
+
         this.connection.connect((err) => {
             if (err) {
                 console.error('Problema na conexão com o banco de dados.' + err.stack);
@@ -45,10 +66,10 @@ export class Mysql {
      * Inicializa um transaction
      */
     public startTransaction() {
-        this.start();
+        this.start(TypeConnection.WRITE);
         this.transaction = true;
-        this.query("SET AUTOCOMMIT=0;");
-        this.query("START TRANSACTION;");
+        this.query(`SET AUTOCOMMIT=0;`);
+        this.query(`START TRANSACTION;`);
     }
 
     /**
@@ -82,7 +103,11 @@ export class Mysql {
 
         // Não inicializa conexão se for uma transaction
         if (!transaction) {
-            this.start();
+            if(/(INSERT|UPDATE|DELETE)/g.test(query)) {
+                this.start(TypeConnection.WRITE);
+            } else {
+                this.start(TypeConnection.READ);
+            }
         }
 
         let end = this.end.bind(this);
