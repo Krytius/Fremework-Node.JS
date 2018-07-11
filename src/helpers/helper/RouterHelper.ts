@@ -1,7 +1,7 @@
 export class RouterHelper {
 
     /**
-     * Concatena prefixo a rotas
+	 * Concat prefix to routes
      * @param routes 
      * @param prefix 
      */
@@ -14,7 +14,7 @@ export class RouterHelper {
     }
 
     /**
-     * Regra de endpoints da API
+	 * Map endpoints
      * @param routes 
      * @param router 
      */

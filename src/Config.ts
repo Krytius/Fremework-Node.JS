@@ -4,37 +4,42 @@ import { EnvHelper } from "./helpers";
 export class Config {
 
     /**
-     * Diretório projeto
+     * Path project
      */
 	public static DIR = __dirname;
 
     /**
-     * URL BASE
+     * BASE URL 
      */
 	public static BASE_URL: string = EnvHelper.env('BASE_URL');
 
     /**
-     * Modo debug (console.log())
+     * Debug Mode (console.log())
      */
 	public static DEBUG: boolean = EnvHelper.bool(EnvHelper.env('DEBUG'));
 
+	/**
+	 * Maintenance Mode
+	 */
+	public static MAINTENANCE: boolean = false;
+
     /**
-     * Projeto em produção
+     * Production
      */
 	public static PRODUCTION: boolean = EnvHelper.bool(EnvHelper.env('PRODUCTION'));
 
     /**
-     * Porta de execuçãodo projeto
+     * Port execution
      */
 	public static PORT: number = Number(EnvHelper.env('PORT'));
 
     /**
-     * Prefixo da API
+     * API prefix
      */
 	public static URL_API_PREFIX: string = EnvHelper.env('URL_API_PREFIX');
 
     /**
-     * Configuração do Banco de Dados
+     * Database configuration
      * DatabaseType: driver
      *  => MYSQL: mysql
      * 
@@ -43,7 +48,7 @@ export class Config {
 	public static DatabaseType = 'mysql';
 
     /**
-     * Multiplas Conexões mas sem balanceamento
+	 * Multiple connection
      * TYPE: TypeConnection.ALL     = INSERT UPDATE DELETE SELECT
      *                      WRITE   = INSERT UPDATE DELETE
      *                      READ    = SELECT
@@ -56,27 +61,27 @@ export class Config {
 	public static SOCKETIO: boolean = EnvHelper.bool(EnvHelper.env('SOCKETIO'));
 
     /**
-     * Token da Criptografia
+     * Token criptography
      */
 	public static KEY: string = EnvHelper.env('KEY');
 
     /**
-     * Tempo de expiração do token da API
+	 * Token expiration
      */
 	public static TOKEN_EXPIRATION_MINUTES: number = Number(EnvHelper.env('TOKEN_EXPIRATION_MINUTES'));
 
     /**
-     * Console descreve rotas do sistema
+     * Route view in console
      */
 	public static VIEWAPI: boolean = EnvHelper.bool(EnvHelper.env('VIEWAPI'));
 
     /**
-     * Para definir a paginação geral do sistema
+	 * Controls itens per page
      */
 	public static LIMITPAGE: number = +EnvHelper.env('LIMITPAGE');
 
     /**
-     * Configuração do SMTP de e-mail
+     * E-mail configuration
      */
 	public static SMTP = {
 		host: EnvHelper.env('SMTP_HOST'),
@@ -89,7 +94,7 @@ export class Config {
 	};
 
     /**
-     * Cache e configuração do redis
+     * Redis control
      */
 	public static CACHE = EnvHelper.bool(EnvHelper.env('CACHE'));
 	public static REDIS = {
@@ -97,6 +102,5 @@ export class Config {
 		port: Number(EnvHelper.env('REDIS_PORT')),
 		password: EnvHelper.env('REDIS_PASSWORD')
 	}
-
 
 }

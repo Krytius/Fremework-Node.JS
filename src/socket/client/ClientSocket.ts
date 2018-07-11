@@ -1,10 +1,10 @@
 /**
- * Controle de clientes do socket
+ * Control clients ON
  */
 export class ClientSocket {
 
     /**
-     * Lista de clientes
+     * List
      * {
      *  'idSocketCliente': socketObjeto
      * }
@@ -12,7 +12,7 @@ export class ClientSocket {
     private static clients = {};
 
     /**
-     * Adiciona cliente a lista
+     * Add client
      * @param socket Objeto Socket
      */
     public static addClient(socket) {
@@ -20,7 +20,7 @@ export class ClientSocket {
     }
 
     /**
-     * Remove cliente da lista pelo idSocketCliente
+	 * Remove client
      * @param id idSocketCliente
      */
     public static removeClient(id) {
@@ -28,7 +28,7 @@ export class ClientSocket {
     }
 
     /**
-     * Busca cliente específico pelo idSocketCliente
+	 * Get client
      * @param id idSocketCliente
      */
     public static getClient(id) {
@@ -36,14 +36,14 @@ export class ClientSocket {
     }
 
     /**
-     * Lista com todos os clientes
+     * All clients
      */
     public static getClients() {
         return this.clients;
     }
 
     /**
-     * Contagem de clientes conectados
+	 * Num clients ON
      */
     public static clientsCount() {
         let cont = 0;
@@ -52,6 +52,4 @@ export class ClientSocket {
         }
         return cont;
     }
-
-
 }

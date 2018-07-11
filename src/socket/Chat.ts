@@ -15,7 +15,7 @@ export class Chat {
     }
 
     /**
-     * Usuário se identificando no chat
+     * Register
      * @param data 
      */
     private clientIdent(data) {
@@ -31,7 +31,7 @@ export class Chat {
     }
 
     /**
-     * Lista de assuntos
+     * List subject
      * @param data 
      */
     private subjectIdent(data) {
@@ -50,7 +50,7 @@ export class Chat {
     }
 
     /**
-     * Entrada do usuário em um canal
+	 * Enter channel
      * @param data 
      */
     private subjectEnter(data) {
@@ -64,7 +64,7 @@ export class Chat {
     }
 
     /**
-     * Envio de mensagem para todos do chat
+	 * Send message clients the channel
      * @param data 
      */
     private mensageSend(data) {

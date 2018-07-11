@@ -1,16 +1,22 @@
 import CryptoJS = require('crypto-js');
 import { Config } from '../../Config';
 
-
-
 export class CryptHelper {
 
-    public static encrypt(message) {
-        return CryptoJS.AES.encrypt(message, Config.KEY).toString();
+	/**
+	 * Encrypt for token .env
+	 * @param item item encrypt
+	 */
+    public static encrypt(item: any) {
+        return CryptoJS.AES.encrypt(`${item}`, Config.KEY).toString();
     }
 
-    public static decrypt(message) {
-        return CryptoJS.AES.decrypt(message, Config.KEY).toString(CryptoJS.enc.Utf8);
+	/**
+	 * Decrypt for token .env
+	 * @param item item decrypt
+	 */
+    public static decrypt(item: any) {
+        return CryptoJS.AES.decrypt(`${item}`, Config.KEY).toString(CryptoJS.enc.Utf8);
     }
 
 

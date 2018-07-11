@@ -7,7 +7,7 @@ export class TokenHelper {
 
 
     /**
-     * Criação do token
+     * Create token
      * @param idUser 
      */
 	public static create(idUser) {
@@ -27,7 +27,7 @@ export class TokenHelper {
 	}
 
     /**
-     * Validação do token
+     * Validate token
      * @param token 
      */
 	public static validate(token) {
@@ -58,6 +58,10 @@ export class TokenHelper {
 
 	}
 
+	/**
+	 * Get user by id
+	 * @param idUser 
+	 */
 	public static getUser(idUser) {
 		return new Promise((resolve, reject) => {
 			var cache = new CacheHelper('User');

@@ -11,22 +11,20 @@ export class SocketStart {
     }
 
     /**
-     * Inicializa endpoints do socket
+     * Start socket endpoints
      */
     public routes() {
         
         this.socket.on('connection', function (socket) {
 
-            // Cliente adicionado a lista
             ClientSocket.addClient(socket);
 
             console.log("Connection Cliente");
             console.log(ClientSocket.clientsCount());
 
-            // Endpoints de socket
+            // Endpoints
             new Chat(socket);
 
-            // Cliente desconectado
             socket.on('disconnect', (reason) => {
                 console.log("Disconnect Cliente");
                 ClientSocket.removeClient(socket.id);

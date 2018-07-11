@@ -37,7 +37,7 @@ export class Database {
     }
 
     /**
-     * Executa comando SQL e retorna um result
+	 * Execute SQL command
      * @param query SQL
      */
     public query(query: string) {
@@ -45,9 +45,9 @@ export class Database {
     }
 
     /**
-     * Monta um select baseado nos parâmetros passados
-     * @param table 
-     * @param select 
+     * Get itens
+     * @param table Table 
+     * @param select Itens select
      * @param where 
      * @param orderBy 
      * @param limit 
@@ -58,7 +58,7 @@ export class Database {
     }
 
     /**
-     * Monta um select baseado no id
+     * Get item
      * @param table 
      * @param id 
      */
@@ -67,7 +67,7 @@ export class Database {
     }
 
     /**
-     * Monta um insert baseado em um objeto json
+     * Insert
      * @param table 
      * @param itens 
      */
@@ -76,7 +76,7 @@ export class Database {
     }
 
     /**
-     * Monta um delete
+     * Delete
      * @param table 
      * @param where 
      */
@@ -85,7 +85,7 @@ export class Database {
     }
 
     /**
-     * Monta um update
+     * Update
      * @param table 
      * @param set 
      * @param where 

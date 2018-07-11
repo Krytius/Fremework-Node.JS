@@ -14,7 +14,7 @@ export class Mysql {
     }
 
     /**
-     * Abre a conexão
+     * Connection Open
      */
     private start(type: TypeConnection) {
 
@@ -55,14 +55,14 @@ export class Mysql {
     }
 
     /**
-     * Fecha a conexão
+     * Close connection
      */
     private end() {
         this.connection.end();
     }
 
     /**
-     * Inicializa um transaction
+     * Start the transaction
      */
     public startTransaction() {
         this.start(TypeConnection.WRITE);
@@ -90,8 +90,8 @@ export class Mysql {
     }
 
     /**
-     * Executa um comando sql
-     * @param query SQL commando
+     * Execute sql command
+     * @param query SQL command
      */
     public query(query: string, params?: any): Promise<any> {
         let transaction = this.transaction;
@@ -100,7 +100,7 @@ export class Mysql {
             console.log(query);
         }
 
-        // Não inicializa conexão se for uma transaction
+		// Not start connection in proccess the transaction
         if (!transaction) {
             if(/(INSERT|UPDATE|DELETE)/g.test(query)) {
                 this.start(TypeConnection.WRITE);
@@ -143,7 +143,7 @@ export class Mysql {
     }
 
     /**
-     * Get itens banco de dados
+     * Get itens
      * @param table 
      * @param select 
      * @param where 
@@ -200,13 +200,18 @@ export class Mysql {
         return this.query(query, params);
     }
 
+	/**
+	 * Get one item
+	 * @param table 
+	 * @param id 
+	 */
     public getRow(table: string, id: number) {
         var where = Object.assign(new Array<WhereModel>(), [{ col: `id`, value: id }])
         return this.get(table, [`*`], where);
     }
 
     /**
-     * Insere itens no banco de dados
+     * Insert item
      * @param table 
      * @param itens 
      */
@@ -229,7 +234,7 @@ export class Mysql {
     }
 
     /**
-     * Deleta linha no banco de dados
+     * Delete item
      * @param table 
      * @param where 
      */
@@ -259,7 +264,7 @@ export class Mysql {
     }
 
     /**
-     * Atualiza linha banco de dados
+     * Update item
      * @param table 
      * @param set 
      * @param where 

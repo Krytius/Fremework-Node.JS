@@ -32,7 +32,7 @@ export class Routes {
     }
 
     /**
-     * Retorna todas as rotas
+	 * All routes
      */
     public static routes() {
         let v0 = [];

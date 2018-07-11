@@ -5,6 +5,10 @@ import { DBConnection, TypeConnection } from '../../interface';
 
 export class EnvHelper {
 
+	/**
+	 * Get key for .env
+	 * @param key 
+	 */
 	public static env(key: string) {
 		let file = fs.readFileSync(`${path.join(__dirname, '../../../')}.env`);
 		let envConfig = dotenv.parse(file);
@@ -15,11 +19,18 @@ export class EnvHelper {
 		}
 	}
 
+	/**
+	 * Parse bool
+	 * @param s 
+	 */
 	public static bool(s: string): boolean {
 		let regex = new RegExp(/(true|1|on)/gi);
 		return regex.test(s);
 	};
 
+	/**
+	 * Get DB connections for .env
+	 */
 	public static envDB(): Array<DBConnection> {
 		let itens = ['DB_HOST_', 'DB_USER_', 'DB_PASSWORD_', 'DB_DATABASE_'];
 		let types = ['WRITE', 'READ'];

@@ -5,7 +5,7 @@ import { OutError, IRequest } from "..";
 export class Postback {
 
     /**
-     * Tratamento de erros da api
+     * Error control
      * @param err 
      * @param req 
      * @param res 

@@ -1,5 +1,10 @@
 export class ValidationHelper {
 
+	/**
+	 * Validate inputs
+	 * @param validations 
+	 * @param params 
+	 */
     public valid(validations, params) {
         try {
             let validationsError: Array<string> = [];
@@ -29,6 +34,7 @@ export class ValidationHelper {
         }
     }
 
+	
     private required(param) {
 
         if (typeof (param) == "undefined") {

@@ -32,7 +32,7 @@ class Main {
 	}
 
     /**
-     * Regra de endpoints da API
+	 * Endpoits
      */
 	private routes(): void {
 		this.express.use(`/upload`, express.static(path.join(`${Config.DIR}`, '../storage')));
@@ -53,7 +53,7 @@ class Main {
 	}
 
     /**
-     * Middlewares da api
+     * Middlewares
      */
 	private middleware(): void {
 		this.express.use(cors(options));
@@ -63,7 +63,7 @@ class Main {
 	}
 
     /**
-     * Tratamentos de erros
+     * Errors
      */
 	private postback() {
 		this.express.use(new Postback().error);

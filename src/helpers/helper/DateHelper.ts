@@ -1,7 +1,8 @@
 export class DateHelper {
 
     /**
-     * UNIXTIME para formato do MYSQL
+     * UNIXTIME to MYSQL
+	 * int => 0000-00-00 00:00:00
      * @param unixTime number
      */
     public static convert(unixTime: number) {
@@ -17,7 +18,8 @@ export class DateHelper {
     }
 
     /**
-     * Converte formato do banco de dados para o UNIXTIME
+	 * MYSQL to UNIXTIME
+	 * 0000-00-00 00:00:00 => int
      * @param dateMYSQL 
      */
     public static convertUnix(dateMYSQL: string) {

@@ -14,7 +14,7 @@ function init() {
 
     const server = http.createServer(App);
 
-    // Configuração de socket ligada inicializa o serviço de socket
+	// Socket ON
     if (Config.SOCKETIO) {
         new SocketStart(socketIO(server));
     }

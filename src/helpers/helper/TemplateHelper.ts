@@ -4,9 +4,9 @@ import { Config } from "../../Config";
 export class TemplateHelper {
 
     /**
-     * Renderiza templates
+	 * Template render
      * @param res Response param
-     * @param template arquivo diretorio pages/template
+     * @param template file path in pages/template
      * @param page pages render
      * @param data object page
      */
