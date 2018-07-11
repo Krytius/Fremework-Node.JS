@@ -39,12 +39,11 @@ export class Mysql {
             console.log("Connection Type", type, this.connection);
         }
 
-
         this.connection.connect((err) => {
             if (err) {
                 console.error('Problema na conexão com o banco de dados.' + err.stack);
                 let error: OutError = {
-                    message: 'Problema na conexão com o banco de dados.' + err.stack,
+                    message: 'Problema na conexão com o banco de dados.',
                     code: 1000
                 }
 

@@ -15,15 +15,22 @@ function init() {
     const server = http.createServer(App);
 
     // Configuração de socket ligada inicializa o serviço de socket
-    if (Config.SocketIO) {
+    if (Config.SOCKETIO) {
         new SocketStart(socketIO(server));
     }
 
     if(Config.CACHE) {
+		if(Config.REDIS.password == "") {
+			delete Config.REDIS.password;
+		}
+		
         CacheRedis.client = redis.createClient(Config.REDIS);
         CacheRedis.client.on("connect", (resp) => {
-            console.info("Cache Connected");
-        })
+            console.info("Redis Connected.");
+		});
+		CacheRedis.client.on("error", (resp) => {
+			console.info("Redis Connection Failed.");
+		});
     }
 
     function normalizePort(val: number | string): number | string | boolean {

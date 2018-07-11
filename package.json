@@ -4,10 +4,13 @@
     "description": "",
     "main": "gulpfile.js",
     "dependencies": {
+        "@types/dotenv": "^4.0.3",
+        "artillery": "^1.6.0-22",
         "body-parser": "^1.15.2",
         "caminte": "^0.4.0",
         "cors": "^2.8.4",
         "crypto-js": "^3.1.9-1",
+        "dotenv": "^6.0.0",
         "ejs": "^2.5.7",
         "express": "^4.14.0",
         "express-formidable": "^1.0.0",

@@ -16,13 +16,17 @@ gulp.task('scripts', () => {
     return tsResult.js.pipe(gulp.dest('dist'));
 });
 
+gulp.task('copy', function() {
+    return gulp.src('./src/.env').pipe(gulp.dest('dist'));
+});
+
 gulp.task('clean', function() {
     return gulp.src('dist', { read: false }).pipe(clean());
 });
 
 gulp.task('watch', ['scripts', 'assets', 'server'], () => {
-    gulp.watch('src/**/*.ts', ['scripts', 'assets', 'server']);
-    gulp.watch('src/**/*.ejs', ['scripts', 'assets', 'server']);
+    gulp.watch('src/**/*.ts', ['scripts', 'assets', 'copy', 'server']);
+    gulp.watch('src/**/*.ejs', ['scripts', 'assets', 'copy', 'server']);
 });
 
 gulp.task('assets', function() {
@@ -45,7 +49,7 @@ gulp.task('server', function() {
 
     timerout = setTimeout(function() {
         console.log('Node Start.');
-        node = spawn('node', ['./dist/Index.js'], { stdio: 'inherit' })
+        node = spawn('node', ['./dist/Start.js'], { stdio: 'inherit' })
         node.on('close', function(code) {
             if (code === 8) {
                 console.log('Error detected, waiting for changes...');
@@ -55,7 +59,7 @@ gulp.task('server', function() {
 });
 
 // DESENVOLVIMENTO
-gulp.task('default', ['clean', 'scripts', 'assets', 'server', 'watch']);
+gulp.task('default', ['clean', 'copy', 'scripts', 'assets', 'server', 'watch']);
 
 gulp.task('passos', ['clean', 'scripts', 'assets', 'angular']);
 
@@ -64,5 +68,10 @@ gulp.task('deploy', function() {
     exec('gulp passos', function(err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
+
+        exec('gulp copy', function(err, stdout, stderr) {
+            console.log(stdout);
+            console.log(stderr);
+        });
     });
 });
