@@ -6,7 +6,7 @@ import { DBConnection, TypeConnection } from '../../interface';
 export class EnvHelper {
 
 	public static env(key: string) {
-		let file = fs.readFileSync(`${path.join(__dirname, '../../')}.env`);
+		let file = fs.readFileSync(`${path.join(__dirname, '../../../')}.env`);
 		let envConfig = dotenv.parse(file);
 		for (var k in envConfig) {
 			if (k == key) {

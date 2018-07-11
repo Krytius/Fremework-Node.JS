@@ -1,7 +1,6 @@
 const { spawn, exec } = require('child_process');
 const gulp = require('gulp');
 var clean = require('gulp-clean');
-var copy = require('gulp-copy');
 const ts = require('gulp-typescript');
 const JSON_FILES = ['src/*.json', 'src/**/*.json'];
 
@@ -14,10 +13,6 @@ var timeout;
 gulp.task('scripts', () => {
     const tsResult = tsProject.src().pipe(tsProject());
     return tsResult.js.pipe(gulp.dest('dist'));
-});
-
-gulp.task('copy', function() {
-    return gulp.src('./src/.env').pipe(gulp.dest('dist'));
 });
 
 gulp.task('clean', function() {
@@ -59,7 +54,7 @@ gulp.task('server', function() {
 });
 
 // DESENVOLVIMENTO
-gulp.task('default', ['clean', 'copy', 'scripts', 'assets', 'server', 'watch']);
+gulp.task('default', ['clean', 'scripts', 'assets', 'server', 'watch']);
 
 gulp.task('passos', ['clean', 'scripts', 'assets', 'angular']);
 
@@ -68,10 +63,5 @@ gulp.task('deploy', function() {
     exec('gulp passos', function(err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
-
-        exec('gulp copy', function(err, stdout, stderr) {
-            console.log(stdout);
-            console.log(stderr);
-        });
     });
 });
